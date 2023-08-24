@@ -1,0 +1,8 @@
+{
+  "item.horrorcallingyou.ring": {
+    "sounds": [
+      "horrorcallingyou:ring"
+    ],
+    "subtitle": "subtitles.horrorcallingyou.item.ring"
+  }
+}
