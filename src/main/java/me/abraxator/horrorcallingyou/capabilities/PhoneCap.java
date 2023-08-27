@@ -1,10 +1,13 @@
 package me.abraxator.horrorcallingyou.capabilities;
 
 import me.abraxator.horrorcallingyou.HorrorCallingYou;
+import me.abraxator.horrorcallingyou.calling.ScaringStage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +17,14 @@ import java.util.Locale;
 
 public interface PhoneCap extends INBTSerializable<CompoundTag> {
     ResourceLocation ID = HorrorCallingYou.path("phone");
+
+    boolean shouldHavePhone();
+
+    boolean hasPhone(Player player);
+
+    ItemStack getPhone();
+
+    void setPhone(ItemStack phone);
 
     void setPlayedCaveNoise(int playedCaveNoise);
 
@@ -27,30 +38,7 @@ public interface PhoneCap extends INBTSerializable<CompoundTag> {
 
     void setScaringStage(ScaringStage scaringStage);
 
-     enum ScaringStage implements StringRepresentable {
-         OFF("off"),
-         NOTIFY("notify"),
-         FAKE_CALL("fake_call"),
-         SILENT_HOUR("silent_hour"),
-         CALLING_YOU("calling_you");
+    float getSignal();
 
-         final String name;
-
-         ScaringStage(String name) {
-             this.name = name;
-         }
-
-         public static final StringRepresentable.EnumCodec<ScaringStage> CODEC = StringRepresentable.fromEnum(ScaringStage::values);
-
-         @Nullable
-         public static ScaringStage byName(String pTranslationKey, @Nullable ScaringStage pFallback) {
-             ScaringStage scaringStage = CODEC.byName(pTranslationKey);
-             return scaringStage != null ? scaringStage : pFallback;
-         }
-
-         @Override
-         public @NotNull String getSerializedName() {
-            return name;
-         }
-     }
+    void setSignal(float signal);
 }

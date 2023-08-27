@@ -1,5 +1,6 @@
 package me.abraxator.horrorcallingyou.items;
 
+import me.abraxator.horrorcallingyou.calling.ScaringStage;
 import me.abraxator.horrorcallingyou.capabilities.PhoneCap;
 import me.abraxator.horrorcallingyou.capabilities.PhoneCapHandler;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
@@ -22,7 +23,7 @@ public class PhoneItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         pPlayer.getCapability(ModCapabilities.PHONE).ifPresent(phoneCapHandler -> {
-            PhoneCap.ScaringStage scaringStage = Arrays.stream(PhoneCap.ScaringStage.values()).toList().get(phoneCapHandler.geScaringStage().ordinal() + 1 == 5 ? 0 : phoneCapHandler.geScaringStage().ordinal() + 1);
+            ScaringStage scaringStage = Arrays.stream(ScaringStage.values()).toList().get(phoneCapHandler.geScaringStage().ordinal() + 1 == 5 ? 0 : phoneCapHandler.geScaringStage().ordinal() + 1);
             phoneCapHandler.setScaringStage(scaringStage);
         });
         return super.use(pLevel, pPlayer, pUsedHand);
@@ -32,9 +33,12 @@ public class PhoneItem extends Item {
     public void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex) {
         super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
         player.getCapability(ModCapabilities.PHONE).ifPresent(phoneCapHandler -> {
-            if(phoneCapHandler.geScaringStage() == PhoneCap.ScaringStage.OFF) {
-                phoneCapHandler.setScaringStage(PhoneCap.ScaringStage.NOTIFY);
+            if(phoneCapHandler.shouldHavePhone() && !phoneCapHandler.hasPhone(player)) {
+                phoneCapHandler.setPhone(stack);
+            }
 
+            if(phoneCapHandler.geScaringStage() == ScaringStage.OFF) {
+                phoneCapHandler.setScaringStage(ScaringStage.NOTIFY);
                 stack.getOrCreateTag().putInt("stage", phoneCapHandler.geScaringStage().ordinal());
             }
         });
