@@ -1,13 +1,12 @@
 package me.abraxator.horrorcallingyou.events;
 
 import me.abraxator.horrorcallingyou.HorrorCallingYou;
+import me.abraxator.horrorcallingyou.init.ModCapabilities;
 import me.abraxator.horrorcallingyou.networking.ModPacketHandler;
 import me.abraxator.horrorcallingyou.networking.UpdateCaveNoiseCountPacket;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -19,6 +18,7 @@ public class CapEvents {
     public static class ModEvents {
         @SubscribeEvent
         public static void updateCaps(LivingEvent.LivingTickEvent event) {
+
         }
     }
 
@@ -36,9 +36,9 @@ public class CapEvents {
         @SubscribeEvent
         public void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
-            Level level = player.level();
-            float mood = ((LocalPlayer) player).getCurrentMood();
-            if (mood >= )
+            player.getCapability(ModCapabilities.PHONE).ifPresent(phoneCapHandler -> {
+                phoneCapHandler.callingYouProcess.tick(player, player.level());
+            });
         }
     }
 }

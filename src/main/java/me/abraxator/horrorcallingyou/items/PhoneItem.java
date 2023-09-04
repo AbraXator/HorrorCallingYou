@@ -1,19 +1,19 @@
 package me.abraxator.horrorcallingyou.items;
 
-import me.abraxator.horrorcallingyou.calling.ScaringStage;
-import me.abraxator.horrorcallingyou.capabilities.PhoneCap;
-import me.abraxator.horrorcallingyou.capabilities.PhoneCapHandler;
+import me.abraxator.horrorcallingyou.calling.ScaringYouStage;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PhoneItem extends Item {
     public PhoneItem(Properties pProperties) {
@@ -23,8 +23,8 @@ public class PhoneItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         pPlayer.getCapability(ModCapabilities.PHONE).ifPresent(phoneCapHandler -> {
-            ScaringStage scaringStage = Arrays.stream(ScaringStage.values()).toList().get(phoneCapHandler.geScaringStage().ordinal() + 1 == 5 ? 0 : phoneCapHandler.geScaringStage().ordinal() + 1);
-            phoneCapHandler.setScaringStage(scaringStage);
+            ScaringYouStage scaringYouStage = Arrays.stream(ScaringYouStage.values()).toList().get(phoneCapHandler.geScaringStage().ordinal() + 1 == 5 ? 0 : phoneCapHandler.geScaringStage().ordinal() + 1);
+            phoneCapHandler.setScaringStage(scaringYouStage);
         });
         return super.use(pLevel, pPlayer, pUsedHand);
     }
@@ -37,10 +37,15 @@ public class PhoneItem extends Item {
                 phoneCapHandler.setPhone(stack);
             }
 
-            if(phoneCapHandler.geScaringStage() == ScaringStage.OFF) {
-                phoneCapHandler.setScaringStage(ScaringStage.NOTIFY);
+            if(phoneCapHandler.geScaringStage() == ScaringYouStage.OFF) {
+                phoneCapHandler.setScaringStage(ScaringYouStage.NOTIFY);
                 stack.getOrCreateTag().putInt("stage", phoneCapHandler.geScaringStage().ordinal());
             }
         });
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
     }
 }

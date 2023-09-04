@@ -1,10 +1,9 @@
 package me.abraxator.horrorcallingyou.networking;
 
+import me.abraxator.horrorcallingyou.calling.CallingYouProcess;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
-import me.abraxator.horrorcallingyou.init.ModItems;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -21,14 +20,11 @@ public class UpdateCaveNoiseCountPacket {
             ctx.get().enqueueWork(() -> {
                 Player player = ctx.get().getSender();
                 player.getCapability(ModCapabilities.PHONE).ifPresent(phoneCapHandler -> {
-                    phoneCapHandler.addPlayedCaveNoise();
-                    if(phoneCapHandler.getPlayedCaveNoise() >= 2) {
-                        if(player.getInventory().contains(ModItems.PHONE.get().getDefaultInstance())) {
-                            phoneCapHandler.setPlayedCaveNoise(1);
-                        } else {
-                            phoneCapHandler.resetPlayedCaveNoise();
-                            player.addItem(new ItemStack(ModItems.PHONE.get()));
-                        }
+                    CallingYouProcess callingYouProcess = phoneCapHandler.callingYouProcess;
+                    if(callingYouProcess.canChangeToNext()) {
+                        phoneCapHandler.callingYouProcess = CallingYouProcess.NEXT_BY_PROCESS.get(callingYouProcess);
+                        callingYouProcess = phoneCapHandler.callingYouProcess;
+                        callingYouProcess.onChangeToThis(player, player.level());
                     }
                 });
             });

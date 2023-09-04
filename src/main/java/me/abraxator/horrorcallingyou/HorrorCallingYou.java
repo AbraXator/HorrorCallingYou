@@ -1,6 +1,7 @@
 package me.abraxator.horrorcallingyou;
 
 import com.mojang.logging.LogUtils;
+import me.abraxator.horrorcallingyou.calling.CallingYouProcessesRegistry;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
 import me.abraxator.horrorcallingyou.init.ModItems;
 import me.abraxator.horrorcallingyou.init.ModSounds;
@@ -25,6 +26,7 @@ public class HorrorCallingYou {
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, ModCapabilities::attachEntityCapability);
 
         ModItems.ITEMS.register(modEventBus);
+        CallingYouProcessesRegistry.PROCESSES.register(modEventBus);
         ModSounds.SOUND_EVENTS.register(modEventBus);
 
         modEventBus.addListener(ModCapabilities::registerCapabilities);
