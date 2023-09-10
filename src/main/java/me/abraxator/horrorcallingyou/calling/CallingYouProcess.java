@@ -3,7 +3,10 @@ package me.abraxator.horrorcallingyou.calling;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import me.abraxator.horrorcallingyou.calling.processes.OffCallingProcess;
+import me.abraxator.horrorcallingyou.capabilities.CallingYouCap;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -50,6 +53,13 @@ public abstract class CallingYouProcess {
 
     public void onChangeToThis(Player player, Level level) {
 
+    }
+
+    public void onUpdateToNextCallingYouProcess(ServerPlayer player, ServerLevel serverLevel, CallingYouCap capHandler, CallingYouProcess callingYouProcess) {
+        if(callingYouProcess.canChangeToNext()) {
+            capHandler.callingYouProcess = NEXT_BY_PROCESS.get(callingYouProcess);
+            NEXT_BY_PROCESS.get(callingYouProcess).onChangeToThis(player, serverLevel);
+        }
     }
 
     public CompoundTag serializeNBT() {

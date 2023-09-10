@@ -15,13 +15,18 @@ public class NotifyCallingProcess extends CallingYouProcess {
 
     @Override
     public void tick(Player player, Level level) {
-        if(player instanceof LocalPlayer localPlayer &&
-                localPlayer.getCurrentMood() >= 6 &&
-                !level.canSeeSky(player.getOnPos()) &&
-                level.isNight() &&
-                level.getSkyDarken() >= 6) {
+        if(canPlaySound(player, level)) {
+            assert getSound() != null;
             level.playSound(null, player.getOnPos(), getSound(), SoundSource.HOSTILE, 1.0F, 1.0F);
             this.caveNoiseTimes++;
         }
+    }
+
+    private boolean canPlaySound(Player player, Level level) {
+        return player instanceof LocalPlayer localPlayer &&
+                localPlayer.getCurrentMood() >= 6 &&
+                !level.canSeeSky(player.getOnPos()) &&
+                level.isNight() &&
+                level.getSkyDarken() >= 6;
     }
 }
