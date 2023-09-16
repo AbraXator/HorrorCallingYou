@@ -1,6 +1,12 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "horrorcallingyou:item/phone"
+  "parent": "minecraft:item/handheld",
+  "loader": "forge:separate_transforms",
+  "base": {
+    "parent": "horrorcallingyou:item/phone_3d"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "horrorcallingyou:item/phone_2d"
+    }
   }
 }
