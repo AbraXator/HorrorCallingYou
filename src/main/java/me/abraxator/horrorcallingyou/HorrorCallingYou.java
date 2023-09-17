@@ -2,6 +2,7 @@ package me.abraxator.horrorcallingyou;
 
 import com.mojang.logging.LogUtils;
 import me.abraxator.horrorcallingyou.calling.CallingYouProcessesRegistry;
+import me.abraxator.horrorcallingyou.init.ModCallingYouProcesses;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
 import me.abraxator.horrorcallingyou.init.ModItems;
 import me.abraxator.horrorcallingyou.init.ModSounds;
@@ -27,6 +28,7 @@ public class HorrorCallingYou {
 
         ModItems.ITEMS.register(modEventBus);
         CallingYouProcessesRegistry.PROCESSES.register(modEventBus);
+        ModCallingYouProcesses.register();
         ModSounds.SOUND_EVENTS.register(modEventBus);
 
         modEventBus.addListener(ModCapabilities::registerCapabilities);

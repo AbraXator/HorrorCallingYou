@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "horrorcallingyou:item/unsolved_note"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "horrorcallingyou:solved": 1.0
+      },
+      "model": "horrorcallingyou:item/solved_note"
+    }
+  ]
+}

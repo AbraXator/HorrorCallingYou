@@ -4,6 +4,7 @@ import me.abraxator.horrorcallingyou.calling.CallingYouProcess;
 import me.abraxator.horrorcallingyou.calling.ScaringYouStage;
 import me.abraxator.horrorcallingyou.init.ModSounds;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -14,12 +15,14 @@ public class NotifyCallingProcess extends CallingYouProcess {
     }
 
     @Override
-    public void tick(Player player, Level level) {
-        if(canPlaySound(player, level)) {
-            assert getSound() != null;
-            level.playSound(null, player.getOnPos(), getSound(), SoundSource.HOSTILE, 1.0F, 1.0F);
-            this.caveNoiseTimes++;
-        }
+    public void onTriggerFired(Player player, Level level) {
+        level.playSound(null, BlockPos.containing(player.position()), sound, SoundSource.AMBIENT);
+        this.notifyNoiseTimes++;
+    }
+
+    @Override
+    public boolean canChangeToNext() {
+        return notifyNoiseTimes >= 2;
     }
 
     private boolean canPlaySound(Player player, Level level) {

@@ -12,4 +12,8 @@ public class ModCallingYouProcesses {
     public static final RegistryObject<CallingYouProcess> FAKE_CALL = PROCESSES.register("fake_call", FakeCallCallingProcess::new);
     public static final RegistryObject<CallingYouProcess> SILENT_HOUR = PROCESSES.register("silent_hour", SilentHourCallingProcess::new);
     public static final RegistryObject<CallingYouProcess> CALLING_YOU = PROCESSES.register("calling_you", CallingYouCallingProcess::new);
+
+    public static void register() {
+        ModCallingYouProcesses modCallingYouProcesses = null;
+    }
 }

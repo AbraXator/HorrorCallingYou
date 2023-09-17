@@ -1,9 +1,8 @@
 package me.abraxator.horrorcallingyou.calling;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import me.abraxator.horrorcallingyou.calling.processes.OffCallingProcess;
-import me.abraxator.horrorcallingyou.capabilities.CallingYouCap;
+import me.abraxator.horrorcallingyou.init.ModCallingYouProcesses;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,17 +12,13 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class CallingYouProcess {
-    public static final BiMap<CallingYouProcess, CallingYouProcess> NEXT_BY_PROCESS = ImmutableBiMap.<CallingYouProcess, CallingYouProcess>builder()
-                .put(Processes.OFF, Processes.NOTIFY)
-                .put(Processes.NOTIFY, Processes.FAKE_CALL)
-                .put(Processes.FAKE_CALL, Processes.SILENT_HOUR)
-                .put(Processes.SILENT_HOUR, Processes.CALLING_YOU)
-                .put(Processes.CALLING_YOU, Processes.OFF)
-            .build();
-    @Nullable
-    private final SoundEvent sound;
-    private final ScaringYouStage stage;
+
+    @Nullable public final SoundEvent sound;
+    public final ScaringYouStage stage;
+    public final String id;
+
     public int caveNoiseTimes;
+    public int notifyNoiseTimes;
 
     public CallingYouProcess(ScaringYouStage stage) {
         this(null, stage);
@@ -33,16 +28,7 @@ public abstract class CallingYouProcess {
         this.sound = sound;
         this.stage = stage;
 
-        this.caveNoiseTimes = 0;
-    }
-
-    @Nullable
-    public SoundEvent getSound() {
-        return sound;
-    }
-
-    public ScaringYouStage getStage() {
-        return stage;
+        this.id = stage.name();
     }
 
     public void tick(Player player, Level level) {}
@@ -51,33 +37,51 @@ public abstract class CallingYouProcess {
         return false;
     }
 
-    public void onChangeToThis(Player player, Level level) {
+    public void onChangeToThis(Player player, Level level) {}
 
+    public static ImmutableBiMap<CallingYouProcess, CallingYouProcess> getNextProcess() {
+        return ImmutableBiMap.<CallingYouProcess, CallingYouProcess>builder()
+                .put(ModCallingYouProcesses.OFF.get(), ModCallingYouProcesses.NOTIFY.get())
+                .put(ModCallingYouProcesses.NOTIFY.get(), ModCallingYouProcesses.FAKE_CALL.get())
+                .put(ModCallingYouProcesses.FAKE_CALL.get(), ModCallingYouProcesses.SILENT_HOUR.get())
+                .put(ModCallingYouProcesses.SILENT_HOUR.get(), ModCallingYouProcesses.CALLING_YOU.get())
+                .put(ModCallingYouProcesses.CALLING_YOU.get(), ModCallingYouProcesses.OFF.get())
+                .build();
     }
 
-    public void onUpdateToNextCallingYouProcess(ServerPlayer player, ServerLevel serverLevel, CallingYouCap capHandler, CallingYouProcess callingYouProcess) {
-        if(callingYouProcess.canChangeToNext()) {
-            capHandler.callingYouProcess = NEXT_BY_PROCESS.get(callingYouProcess);
-            NEXT_BY_PROCESS.get(callingYouProcess).onChangeToThis(player, serverLevel);
+    public static CallingYouProcess updateToNextProcess(ServerPlayer player, ServerLevel serverLevel, CallingYouProcess callingYouProcess) {
+        callingYouProcess = getNextProcess().getOrDefault(callingYouProcess, ModCallingYouProcesses.OFF.get());
+        callingYouProcess.onChangeToThis(player, serverLevel);
+        return callingYouProcess;
+        /*if(callingYouProcess.canChangeToNext()) {
+            callingYouProcess = getNextProcess().getOrDefault(callingYouProcess, ModCallingYouProcesses.OFF.get());
+            callingYouProcess.onChangeToThis(player, serverLevel);
         }
+        return callingYouProcess;*/
     }
 
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", this.stage.name);
         tag.putInt("caveNoiseTimes", this.caveNoiseTimes);
+        tag.putInt("notifyNoiseTimes", this.notifyNoiseTimes);
         return tag;
     }
 
-    public static CallingYouProcess deserializeNBT(CompoundTag tag) {
+    public CallingYouProcess deserializeNBT(CompoundTag tag) {
         var optional = CallingYouProcessesRegistry.PROCESSES.getEntries().stream().filter(o ->
                 o.getId().getPath().equals(tag.getString("id"))).findFirst();
         if(optional.isPresent()) {
             CallingYouProcess callingYouProcess = optional.get().get();
             callingYouProcess.caveNoiseTimes = tag.getInt("caveNoiseTimes");
+            callingYouProcess.notifyNoiseTimes = tag.getInt("notifyNoiseTimes");
             return callingYouProcess;
         } else {
             return new OffCallingProcess();
         }
+    }
+
+    public void onTriggerFired(Player player, Level level) {
+
     }
 }

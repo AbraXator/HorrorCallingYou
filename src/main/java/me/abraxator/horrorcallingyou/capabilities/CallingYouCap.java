@@ -22,6 +22,10 @@ public class CallingYouCap implements INBTSerializable<CompoundTag> {
         return phone.is(ModItems.PHONE.get());
     }
 
+    public CallingYouProcess getCallingYouProcess() {
+        return callingYouProcess == null ? new OffCallingProcess() : callingYouProcess;
+    }
+
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
@@ -34,7 +38,8 @@ public class CallingYouCap implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        this.callingYouProcess = CallingYouProcess.deserializeNBT(nbt.getCompound("callingProcess"));
+        if(this.callingYouProcess == null) this.callingYouProcess = new OffCallingProcess();
+        this.callingYouProcess = callingYouProcess.deserializeNBT(nbt.getCompound("callingProcess"));
         this.phone = ItemStack.of(nbt.getCompound("phone"));
     }
 }

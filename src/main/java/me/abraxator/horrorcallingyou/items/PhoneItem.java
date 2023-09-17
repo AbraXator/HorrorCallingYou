@@ -1,14 +1,16 @@
 package me.abraxator.horrorcallingyou.items;
 
+import me.abraxator.horrorcallingyou.calling.CallingYouProcess;
 import me.abraxator.horrorcallingyou.capabilities.CallingYouCap;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
 import me.abraxator.horrorcallingyou.networking.ModPacketHandler;
-import me.abraxator.horrorcallingyou.networking.UpdateToNextCallingYouProcess;
+import me.abraxator.horrorcallingyou.networking.CaveNoisePacket;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,8 +29,23 @@ public class PhoneItem extends Item {
     }
 
     @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        if(entity instanceof Player player) {
+            player.getCapability(ModCapabilities.PHONE).ifPresent(callingYouCap -> {
+                CallingYouProcess callingYouProcess = callingYouCap.getCallingYouProcess();
+                callingYouProcess.onTriggerFired(player, player.level());
+                callingYouCap.callingYouProcess = callingYouProcess;
+            });
+        }
+        return super.onEntitySwing(stack, entity);
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
-        ModPacketHandler.CHANNEL.sendToServer(new UpdateToNextCallingYouProcess());
+        pPlayer.getCapability(ModCapabilities.PHONE).ifPresent(callingYouCap -> {
+
+        });
+        ModPacketHandler.CHANNEL.sendToServer(new CaveNoisePacket());
         return super.use(pLevel, pPlayer, pUsedHand);
     }
 
@@ -45,7 +62,7 @@ public class PhoneItem extends Item {
 
     private void dropAllNewPhoneStacks(ServerPlayer serverPlayer) {
         NonNullList<ItemStack> inventory = serverPlayer.getInventory().items;
-        Stream<ItemStack> stream = inventory.stream().filter(stack -> stack.getItem() instanceof PhoneItem);
+        Stream<ItemStack> stream = inventory.stream().filter(stack -> stack.getItem() instanceof PhoneItem && !stack.getOrCreateTag().getBoolean("firstOne"));
         Map<ItemStack, Integer> map = stream.collect(Collectors.toMap(stack -> stack, inventory::indexOf));
 
         map.forEach((stack, integer) -> {

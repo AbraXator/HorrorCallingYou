@@ -15,6 +15,6 @@ public class ModPacketHandler {
 
     public static void init() {
         int id = 0;
-        CHANNEL.registerMessage(id++, UpdateToNextCallingYouProcess.class, UpdateToNextCallingYouProcess::encode, UpdateToNextCallingYouProcess::new, UpdateToNextCallingYouProcess.Handler::onMessage);
+        CHANNEL.registerMessage(id++, CaveNoisePacket.class, CaveNoisePacket::encode, CaveNoisePacket::new, CaveNoisePacket.Handler::onMessage);
     }
 }
