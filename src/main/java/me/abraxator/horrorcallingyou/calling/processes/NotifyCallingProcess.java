@@ -7,6 +7,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class NotifyCallingProcess extends CallingYouProcess {
@@ -15,7 +16,7 @@ public class NotifyCallingProcess extends CallingYouProcess {
     }
 
     @Override
-    public void onTriggerFired(Player player, Level level) {
+    public void onTriggerFired(Player player, Level level, ItemStack phoneStack) {
         level.playSound(null, BlockPos.containing(player.position()), sound, SoundSource.AMBIENT);
         this.notifyNoiseTimes++;
     }

@@ -3,8 +3,8 @@ package me.abraxator.horrorcallingyou.items;
 import me.abraxator.horrorcallingyou.calling.CallingYouProcess;
 import me.abraxator.horrorcallingyou.capabilities.CallingYouCap;
 import me.abraxator.horrorcallingyou.init.ModCapabilities;
-import me.abraxator.horrorcallingyou.networking.ModPacketHandler;
 import me.abraxator.horrorcallingyou.networking.CaveNoisePacket;
+import me.abraxator.horrorcallingyou.networking.ModPacketHandler;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,7 +33,7 @@ public class PhoneItem extends Item {
         if(entity instanceof Player player) {
             player.getCapability(ModCapabilities.PHONE).ifPresent(callingYouCap -> {
                 CallingYouProcess callingYouProcess = callingYouCap.getCallingYouProcess();
-                callingYouProcess.onTriggerFired(player, player.level());
+                callingYouProcess.onTriggerFired(player, player.level(), callingYouCap.phone);
                 callingYouCap.callingYouProcess = callingYouProcess;
             });
         }
